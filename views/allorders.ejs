@@ -80,6 +80,10 @@
             margin: 0px;
         }
 
+        td button{
+            padding: 10px;
+            background-color: lightgreen;
+        }
 
     </style>
 </head>
@@ -98,6 +102,8 @@
                 <th>Status</th>
                 <th>Total Invoice Value</th>
                 <th>Payment Status</th>
+                <th>Action</th>
+                <th>Payment</th>
             </tr>
         </thead>
         <tbody>
@@ -120,11 +126,13 @@
                 <td><%= formattedorderDate %></td>
                 <td><%= formatteddeliveryDate %></td>
                 <td><%= data.time %></td>
-                <td><%= data.volume %></td>
+                <td><%= data.volume %></td>x
                 <td><%= data.quantity %></td>
                 <td><%= data.status %></td>
                 <td><%= data.total_invoice_value %></td>
                 <td><%= data.payment_status %></td>
+                <td><button class="delivery-status" data-slno="<%= data.id %>">Delivered</button></td>
+                <td><button class="paid-status" slno="<%= data.id %>">Paid</button></td>
             </tr>
             <% }); %>
         </tbody>
@@ -146,6 +154,64 @@
             var wb = XLSX.utils.table_to_book(table, {sheet: "Orders"});
             XLSX.writeFile(wb, 'previous_orders.xlsx');
         });
+        // var deliveryStatusButtons = document.getElementsByClassName("delivery-status");
+        // for (var i = 0; i < deliveryStatusButtons.length; i++) {
+        // deliveryStatusButtons[i].addEventListener("click", function() {
+        //     alert("Delivered");
+        //     var slno = this.getAttribute("data-slno");
+        //     alert("Delivered Slno: " + slno);
+        //     });
+        // }
+        // db.query("UPDATE order-info SET status = 'delivered' WHERE id = $1",[slno]);
+        var deliveryStatusButtons = document.getElementsByClassName("delivery-status");
+        for (var i = 0; i < deliveryStatusButtons.length; i++) {
+            deliveryStatusButtons[i].addEventListener("click", function() {
+                var slno = this.getAttribute("data-slno");
+                fetch('/update-order-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ slno: slno, status: 'delivered' })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Order marked as delivered successfully.");
+                    } else {
+                        alert("Failed to mark order as delivered.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred while marking order as delivered.");
+                });
+            });
+        }
+
+        var paidStatusButtons = document.getElementsByClassName("paid-status");
+        for (var i = 0; i < paidStatusButtons.length; i++) {
+            paidStatusButtons[i].addEventListener("click", function() {
+                var p_slno = this.getAttribute("slno");
+                fetch('/update-payment-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ slno: p_slno, status: 'paid' })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Order marked as Paid successfully.");
+                    } else {
+                        alert("Failed to mark order as Paid.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred while marking order as Paid.");
+                });
+            });
+        }
     </script>
     
 </body>

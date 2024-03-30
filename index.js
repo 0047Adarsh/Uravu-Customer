@@ -1,14 +1,16 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { dirname } from "path";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import pg from "pg";
 import session from "express-session";
-import { get } from "http";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = 3000;
+
+app.set("view engine", "ejs");
+app.set("views", join(__dirname, "views"));
 
 const db = new pg.Client({
     user: "postgres",
@@ -20,6 +22,7 @@ const db = new pg.Client({
 
 db.connect();
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.use(session({
     secret: 'secret',
@@ -52,7 +55,7 @@ app.post('/placeorder', async (req, res) => {
                 req.session.username = username;
                 res.render("index.ejs", { newdata: username, models: model });
                 console.log(`${username} has logged in the portal`);
-            } else {
+            } else {    
                 res.redirect("/");
                 console.log("Password is wrong");
             }
@@ -62,7 +65,6 @@ app.post('/placeorder', async (req, res) => {
         }
     } catch (err) {
         console.log("The error is at:" + err)
-        res.sends("User Does not exist");
     }
 });
 
@@ -76,7 +78,6 @@ app.post("/submit", async (req, res) => {
     const o_bottlemodel = new_order.bottleModel;
     const o_orderdate = new_order.order_date;
     const o_deliverydate = new_order.delivery_date;
-    const o_deliverytime = new_order.delivery_time;
     const o_deliverytimE = new_order.delivery_timE;
     const o_quantity = new_order.quant_ity;
     const o_status = "Ordered";
@@ -97,6 +98,32 @@ app.post("/add", (req, res) => {
     const n_volume = new_response.new_volume1;
     const n_branch = new_response.new_branch;
     db.query("INSERT INTO customer_info (username, password, volume, branch) VALUES ($1, $2, $3, $4)", [n_username, n_password, n_volume, n_branch]);
+}); 
+
+app.post('/update-order-status', (req, res) => {
+    const { slno, status } = req.body;
+
+    db.query('UPDATE order_info SET status = $1 WHERE id = $2', [status, slno])
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch(error => {
+            console.error('Error updating order status:', error);
+            res.sendStatus(500);
+        });
+});
+
+app.post('/update-payment-status', (req, res) => {
+    const { slno, status } = req.body;
+
+    db.query('UPDATE order_info SET payment_status = $1 WHERE id = $2', [status, slno])
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch(error => {
+            console.error('Error updating order status:', error);
+            res.sendStatus(500);
+        });
 });
 
 app.get("/allorders", async (req, res) => {
