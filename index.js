@@ -62,6 +62,7 @@ app.post('/placeorder', async (req, res) => {
         }
     } catch (err) {
         console.log("The error is at:" + err)
+        sendFile("User Does not exist");
     }
 });
 
