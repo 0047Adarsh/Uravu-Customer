@@ -9,8 +9,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = 3000;
 
-app.set("view engine", "ejs");
 app.set("views", join(__dirname, "views"));
+app.set("view engine", "ejs");
 
 const db = new pg.Client({
     user: "postgres",
@@ -18,7 +18,7 @@ const db = new pg.Client({
     database: "UravuLabs",
     host: "localhost",
     port:  5432,
-});
+}); 
 
 db.connect();
 app.use(bodyParser.urlencoded({ extended: true }));
