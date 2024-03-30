@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Page</title>
+    <link href="./main.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="nav-bar"><i class='bx bxs-home' ></i> 
+            <a href="#">Home</a></div>
+        <div class="nav-bar"><i class='bx bxs-box' ></i>
+            <a href="/allorders?username=<%= newdata %>">All Orders</a></div>
+        <div class="nav-bar"><i class='bx bxs-user-voice' ></i>
+            <a href="#">Complaint</a></div>
+    </div>
+    <!-- <% if(locals.newdata){ %>
+        <h1> Welcome <%= newdata %>!!!</h1>
+    <% }else{ %>
+        <h1> No Data Found!</h1>    
+    <% } %> -->
+    <div class="orderpage">
+        <form action="/submit" method="POST" id="orderForm">
+            <input name="user_name" value="<%= newdata %>"type="hidden">
+            <div class="input-group">
+                <h1><label>Bottle Model</label></h1>
+                <select name="bottleModel">
+                    <option>--Please choose a Model--</option>
+                    <% for(i=0;i<models.length;i++) { %>  
+                        <option><%= models[i] %></option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="input-group">
+                <h1><label>Order Date</label></h1>
+                <input type="date" id="orderdate" name="order_date" readonly>
+            </div>
+            <div class="input-group">
+                <h1><label>Delivery Date</label></h1>
+                <input type="date" id="deliveryDate" name="delivery_date" required>
+            </div>
+            <div class="input-group">
+                <h1><label>Delivery Time</label></h1>
+                <select name="delivery_timE">
+                    <option>9AM to 12PM</option>
+                    <option>12PM to 3PM</option>
+                    <option>3PM to 6PM</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <h1><label>Quantity</label></h1>
+                <input type="number" name="quant_ity" required>
+            </div>
+            <input type="submit" value="Place Order" onsubmit="submit_form();">
+        </form>
+    </div>
+</body>
+<script>
+    var date = new Date();
+
+    function returndate()
+    {
+        let today_date = date.getDate();
+        let today_month = date.getMonth() + 1;
+        let today_year = date.getFullYear();
+        if(today_date < 10){
+            today_date = "0"+today_date;
+        };
+        if(today_month < 10){
+            today_month = "0"+today_month;
+        };
+        let today = today_year +"-"+today_month+"-"+today_date;
+        document.getElementById("orderdate").setAttribute('value', today);
+    }
+    returndate();
+
+    function setMinDeliveryDate() {
+        date.setDate(date.getDate() + 2);
+        var minDeliveryDate = date.toISOString().split('T')[0];
+        document.getElementById('deliveryDate').setAttribute('min', minDeliveryDate);
+    }
+    setMinDeliveryDate();
+
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     document.getElementById('orderForm').addEventListener('submit', function (event) {
+    //         clearFormFields();
+    //     });
+        
+    //     function clearFormFields() {
+    //         var form = document.getElementById('orderForm');
+    //         form.reset();
+    //     }
+    // });
+
+    function submit_form()
+    {
+        var form = document.getElementById('orderForm');
+        form.onsubmit = ()=>{
+            setTimeout(form.reset, 1000);
+        }
+    }
+
+</script>
+</html>

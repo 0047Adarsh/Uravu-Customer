@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previous Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: left;
+            margin-top: 30px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #333;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        td.ordered{
+            background-color: lightcoral;
+        }
+        
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        td {
+            color: #555;
+            text-align: center;
+            text-transform: capitalize;
+        }
+
+        #download-btn {
+            position: absolute
+            ;
+            height: 40px;
+            top: 20px;
+            right: 20px;
+            background-color: #555;
+            color: white;
+        }
+
+
+        .total {
+            position: absolute;
+            top: 20px;
+            right: 180px;
+            background-color: #fff;
+            padding: 10px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            color: #333;
+            z-index: 999;
+            margin: 0px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <h1>Previous Orders</h1>
+    <table id="order-table">
+        <thead>
+            <tr>
+                <th>Slno.</th>
+                <th>Username</th>
+                <th>Order Date</th>
+                <th>Delivery Date</th>
+                <th>Delivery Time</th>
+                <th>Volume</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th>Total Invoice Value</th>
+                <th>Payment Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% display_data.forEach(data => { %>
+                <% const o_timestamp = data.order_date
+                const o_datePart = new Date(o_timestamp).toISOString().slice(0, 10);
+
+                const [o_year, o_month, o_day] = o_datePart.split("-");
+                const formattedorderDate = `${o_day}-${o_month}-${o_year}`;
+                %>
+                <% const d_timestamp = data.delivery_date
+                const d_datePart = new Date(d_timestamp).toISOString().slice(0, 10);
+
+                const [d_year, d_month, d_day] = d_datePart.split("-");
+                const formatteddeliveryDate = `${d_day}-${d_month}-${d_year}`;
+                %>
+            <tr>
+                <td><%= data.id %></td>
+                <td><%= data.username %></td>
+                <td><%= formattedorderDate %></td>
+                <td><%= formatteddeliveryDate %></td>
+                <td><%= data.time %></td>
+                <td><%= data.volume %></td>
+                <td><%= data.quantity %></td>
+                <td><%= data.status %></td>
+                <td><%= data.total_invoice_value %></td>
+                <td><%= data.payment_status %></td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    <button id="download-btn">Download as Excel</button>
+    <h1 class="total">Total Pending Amount: ₹<%= inv_total %></h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.2/xlsx.full.min.js"></script>
+    <script>
+        function formatDate(date){
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = (d.getMonth() + 1).toString().padStart(2, '0');
+            const day = d.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        document.getElementById('download-btn').addEventListener('click', function() {
+            var table = document.getElementById('order-table');
+            var wb = XLSX.utils.table_to_book(table, {sheet: "Orders"});
+            XLSX.writeFile(wb, 'previous_orders.xlsx');
+        });
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link href="./admin.css" rel="stylesheet">
+</head>
+<body>
+    <h1>This is the admin Console</h1>
+    <div class="form-container">
+        <form action="/add" method="post">
+            <input name="new_username" type="text" placeholder="Username">
+            <input name="new_password" type= "text" placeholder="Password">
+            <select name="new_volume1">
+                <option>500 ml</option>
+                <option>750 ml</option>
+            </select>
+            <input name="new_branch" type="text" placeholder="Branch Name">  
+            <input type="submit"  value="Add Client"> 
+        </form>
+    </div>
+</body>
+</html>
