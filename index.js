@@ -41,6 +41,33 @@ app.get("/admin", (req, res) => {
     res.render("admin.ejs")
 });
 
+// app.post('/placeorder', async (req, res) => {
+//     const username = req.body.user_name;
+//     const password = req.body.pass_word;
+//     try {
+//         const result = await db.query("SELECT * FROM customer_info WHERE username = $1", [username]);
+//         if (result.rows.length > 0) {
+//             const model = [];
+//             const result_model = result.rows[0].volume;
+//             model.push(result_model);
+//             const stored_password = result.rows[0].password;
+//             if (stored_password === password) {
+//                 req.session.username = username;
+//                 res.render("index.ejs", { newdata: username, models: model });
+//                 console.log(`${username} has logged in the portal`);
+//             } else {    
+//                 res.redirect("/");
+//                 console.log("Password is wrong");
+//             }
+//         } else {
+//             console.log("User does not exist");
+//             res.redirect("/");
+//         }
+//     } catch (err) {
+//         console.log("The error is at:" + err)
+//     }
+// });
+
 app.post('/placeorder', async (req, res) => {
     const username = req.body.user_name;
     const password = req.body.pass_word;
@@ -56,17 +83,18 @@ app.post('/placeorder', async (req, res) => {
                 res.render("index.ejs", { newdata: username, models: model });
                 console.log(`${username} has logged in the portal`);
             } else {    
-                res.redirect("/");
+                res.render("login_error.ejs", { error: "Password is wrong" });
                 console.log("Password is wrong");
             }
         } else {
+            res.render("login_error.ejs", { error: "User does not exist" });
             console.log("User does not exist");
-            res.redirect("/");
         }
     } catch (err) {
         console.log("The error is at:" + err)
     }
 });
+
 
 app.post("/submit", async (req, res) => {
     if (!req.session.username) {
